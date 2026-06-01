@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>七軍領地爭奪戰 - 幼教 3C 議題專版</title>
+    <title>七軍領地爭奪戰 - 幼教 3C 議題音效專版</title>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -37,7 +37,7 @@
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        const { useState, useEffect } = React;
+        const { useState, useEffect, useRef } = React;
 
         const TEAMS = [
             { id: 'red', name: '紅龍軍', color: 'bg-red-500' },
@@ -49,12 +49,12 @@
             { id: 'cyan', name: '青羽軍', color: 'bg-cyan-500' },
         ];
 
-        // 18 題專業幼教題庫導入
+        // 18 題專業幼教題庫
         const QUESTIONS = [
             { q: "1. 學齡前幼兒習慣了數位媒體帶來的即時反饋，在參與現實生活時可能容易對實體活動失去興趣。這最主要是屬於下列哪一個影響？", a: ["(A) 社會適應的動態歷程", "(B) 生活自理能的養成", "(C) 情緒能力的內省特質", "(D) 螢幕媒體的即時反饋影響"], c: 3 },
             { q: "2. 請問「雙薪家庭的父母下班太累，只好讓孩子自己看電視」，這是用哪一個理論來解釋環境對孩子的影響？", a: ["(A) 社會學習理論", "(B) 學前閱讀計劃", "(C) 自我調節理論", "(D) 生態系統理論"], c: 3 },
             { q: "3. 「弟弟看到哥哥玩手機沒被罵，也跟著學，最後靠哭鬧成功拿到手機。」這屬於哪一個理論說的「觀察與模仿」？", a: ["(A) 數位失智症理論", "(B) 社會學習理論", "(C) 生態系統理論", "(D) 自我調節理論"], c: 1 },
-            { q: "4. 当學齡前幼兒「手機一被拿走就大哭大鬧，沒辦法控制自己想繼續看的衝動」，這在理論上稱為什麼呢？", a: ["(A) 自我調節失效", "(B) 社會能力良好", "(C) 語言能力不足", "(D) 正面安撫策略"], c: 0 },
+            { q: "4. 当學齡前幼兒「手機一被拿走就大哭大鬧，沒辦法控制自己想繼續看的衝動」，這在理論上稱微什麼呢？", a: ["(A) 自我調節失效", "(B) 社會能力良好", "(C) 語言能力不足", "(D) 正面安撫策略"], c: 0 },
             { q: "5. 醫學報導提到，如果3-5歲幼兒每天看3C超過1小時且沒有大人陪伴，大腦中哪一個負責「傳導語言和認知」的通路會發育不好？", a: ["(A) 小腦", "(B) 視覺神經", "(C) 弓狀束", "(D) 脊隨"], c: 2 },
             { q: "6. 在幼兒園老師的訪談中，疑似過度依賴 3C 的孩子，在學校最明顯的行為表現是什麼？", a: ["(A) 主動幫忙教師維持班級秩序", "(B) 經常熱烈討論3C螢幕產品的相關內容", "(C) 體能活動非常厲害", "(D) 專注力與靜態學習的參與度上明顯較弱"], c: 3 },
             { q: "7. 在教師訪談結果中，多位老師普遍觀察到近年來的孩子在「生活自理能力」上有何具體改變？", a: ["(A) 嘴巴不會說，但在實際操作上能力非常強", "(B) 生活自理普遍變弱，因為家人常常主動代勞", "(C) 普遍顯著提升，且解決問題的動機強烈", "(D) 進到幼兒園就會自己收書包和穿鞋"], c: 1 },
@@ -83,6 +83,36 @@
             const [showQuiz, setShowQuiz] = useState(null);
             const [cooldown, setCooldown] = useState(0);
             const [feedback, setFeedback] = useState(null);
+            const [isMuted, setIsMuted] = useState(false);
+
+            // 音訊物件化（免版權緊張動感音樂與音效庫）
+            const bgmRef = useRef(new Audio("https://actions.google.com/sounds/v1/science_fiction/pulsating_structural_hum.ogg"));
+            const sfxCorrectRef = useRef(new Audio("https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg"));
+            const sfxWrongRef = useRef(new Audio("https://actions.google.com/sounds/v1/impacts/crash_wood.ogg"));
+
+            // 音訊基礎設定
+            useEffect(() => {
+                bgmRef.current.loop = true;
+                bgmRef.current.volume = 0.4;
+                sfxCorrectRef.current.volume = 0.6;
+                sfxWrongRef.current.volume = 0.5;
+            }, []);
+
+            // 靜音控制
+            useEffect(() => {
+                bgmRef.current.muted = isMuted;
+                sfxCorrectRef.current.muted = isMuted;
+                sfxWrongRef.current.muted = isMuted;
+            }, [isMuted]);
+
+            // 遊戲開始與結束時的 BGM 控制
+            useEffect(() => {
+                if (isStarted && timeLeft > 0) {
+                    bgmRef.current.play().catch(() => console.log("等待使用者點擊互動以播放音訊"));
+                } else {
+                    bgmRef.current.pause();
+                }
+            }, [isStarted, timeLeft]);
 
             // 資料庫同步
             useEffect(() => {
@@ -138,10 +168,14 @@
 
             const handleAnswer = (idx) => {
                 if (idx === showQuiz.c) {
+                    sfxCorrectRef.current.currentTime = 0;
+                    sfxCorrectRef.current.play().catch(() => {});
                     setFeedback({ ok: true, msg: '✅ 正確！佔領成功' });
                     capture();
                     setTimeout(() => { setShowQuiz(null); setFeedback(null); }, 400);
                 } else {
+                    sfxWrongRef.current.currentTime = 0;
+                    sfxWrongRef.current.play().catch(() => {});
                     setFeedback({ ok: false, msg: '❌ 錯誤！冷卻 5 秒' });
                     setCooldown(5);
                     setTimeout(() => { setShowQuiz(null); setFeedback(null); }, 1000);
@@ -180,6 +214,9 @@
                                     <span className="text-red-500 font-bold text-2xl">剩餘時間</span>
                                     <span className="text-5xl font-mono font-black">{Math.floor(timeLeft/60)}:{(timeLeft%60).toString().padStart(2,'0')}</span>
                                 </div>
+                                <button onClick={() => setIsMuted(!isMuted)} className="glass px-4 py-2 rounded-xl font-bold text-sm text-slate-300">
+                                    {isMuted ? "🔇 靜音模式" : "🔊 音效開啟"}
+                                </button>
                             </div>
                             <div className="text-right">
                                 <p className="text-slate-500 text-sm font-bold tracking-widest">連線代碼</p>
