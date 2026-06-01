@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>七軍領地爭奪戰 - Firebase 專業版</title>
+    <title>七軍領地爭奪戰 - 幼教 3C 議題專版</title>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -24,7 +24,7 @@
     <div id="root"></div>
 
     <script type="text/babel">
-        // 您的專屬 Firebase 配置
+        // Firebase 配置
         const firebaseConfig = {
             apiKey: "AIzaSyDw87Q1WigfxGiGWB2k2HvSQ9LXV2DF6Pw",
             authDomain: "class-game-9073c.firebaseapp.com",
@@ -49,12 +49,26 @@
             { id: 'cyan', name: '青羽軍', color: 'bg-cyan-500' },
         ];
 
+        // 18 題專業幼教題庫導入
         const QUESTIONS = [
-            { q: "HTML 中圖片標籤是？", a: ["<link>", "<a>", "<img>"], c: 2 },
-            { q: "宣告常數使用？", a: ["let", "define", "const"], c: 2 },
-            { q: "哪一個是 JavaScript 框架？", a: ["React", "Django", "Laravel"], c: 0 },
-            { q: "1MB 等於多少 KB？", a: ["1000", "1024", "2048"], c: 1 },
-            { q: "CSS 設定間距的屬性？", a: ["padding", "color", "font"], c: 0 },
+            { q: "1. 學齡前幼兒習慣了數位媒體帶來的即時反饋，在參與現實生活時可能容易對實體活動失去興趣。這最主要是屬於下列哪一個影響？", a: ["(A) 社會適應的動態歷程", "(B) 生活自理能的養成", "(C) 情緒能力的內省特質", "(D) 螢幕媒體的即時反饋影響"], c: 3 },
+            { q: "2. 請問「雙薪家庭的父母下班太累，只好讓孩子自己看電視」，這是用哪一個理論來解釋環境對孩子的影響？", a: ["(A) 社會學習理論", "(B) 學前閱讀計劃", "(C) 自我調節理論", "(D) 生態系統理論"], c: 3 },
+            { q: "3. 「弟弟看到哥哥玩手機沒被罵，也跟著學，最後靠哭鬧成功拿到手機。」這屬於哪一個理論說的「觀察與模仿」？", a: ["(A) 數位失智症理論", "(B) 社會學習理論", "(C) 生態系統理論", "(D) 自我調節理論"], c: 1 },
+            { q: "4. 当學齡前幼兒「手機一被拿走就大哭大鬧，沒辦法控制自己想繼續看的衝動」，這在理論上稱為什麼呢？", a: ["(A) 自我調節失效", "(B) 社會能力良好", "(C) 語言能力不足", "(D) 正面安撫策略"], c: 0 },
+            { q: "5. 醫學報導提到，如果3-5歲幼兒每天看3C超過1小時且沒有大人陪伴，大腦中哪一個負責「傳導語言和認知」的通路會發育不好？", a: ["(A) 小腦", "(B) 視覺神經", "(C) 弓狀束", "(D) 脊隨"], c: 2 },
+            { q: "6. 在幼兒園老師的訪談中，疑似過度依賴 3C 的孩子，在學校最明顯的行為表現是什麼？", a: ["(A) 主動幫忙教師維持班級秩序", "(B) 經常熱烈討論3C螢幕產品的相關內容", "(C) 體能活動非常厲害", "(D) 專注力與靜態學習的參與度上明顯較弱"], c: 3 },
+            { q: "7. 在教師訪談結果中，多位老師普遍觀察到近年來的孩子在「生活自理能力」上有何具體改變？", a: ["(A) 嘴巴不會說，但在實際操作上能力非常強", "(B) 生活自理普遍變弱，因為家人常常主動代勞", "(C) 普遍顯著提升，且解決問題的動機強烈", "(D) 進到幼兒園就會自己收書包和穿鞋"], c: 1 },
+            { q: "8. 受訪的家長在管理孩子使用螢幕時間上「沒有遇到管理困難」的主要原因是什麼？", a: ["(A) 長輩說可以看，爸媽就不敢反對", "(B) 隨便孩子看，只要不哭鬧就好", "(C) 規定明確、事先講好時間，並堅持教養原則", "(D) 直接把家裡所有的手機和電視丟掉"], c: 2 },
+            { q: "9. 針對過度螢幕使用經驗議題帶來的影響，在「社會方面」提出的具體建議為何？", a: ["(A) 呼籲科技公司研發更多能完全取代真實親子互動的育兒軟體", "(B) 因為根本問題在家庭教育，社會應完全譴責並處罰家長", "(C) 政府或社會單位提供更多親職教育講座，發展遲緩狀況增加時，亦會加重醫療與社福單位的資源負擔", "(D) 完全取消所有幼兒園的課外活動，全面改為線上數位學習"], c: 2 },
+            { q: "10. 根據我國法律規定，幾歲以上到上小學前的孩子被稱為「學齡前幼兒」？", a: ["(A) 1歲", "(B) 5歲", "(C) 3歲", "(D) 2歲"], c: 3 },
+            { q: "11. 孩子如果習慣了手機或平板的「即時反饋」，可能會出現什麼現象？", a: ["(A) 對現實生活中的實體活動失去興趣", "(B) 會主動幫媽媽做家事", "(C) 變得非常喜歡看書和畫畫", "(D) 生活自理能力會突然變得很厲害"], c: 0 },
+            { q: "12. 下列何者最符合「社會適應」之意涵？", a: ["（A）個體完全遵從環境要求", "（B）個體避免與他人發生衝突", "（C）個體透過競爭取得優勢地位", "（D）個體在與環境互動中持續調整自身行為與心理狀態，以達成平衡關係"], c: 3 },
+            { q: "13. 依據生態系統理論，下列何者最能說明「外部系統影響微系統」？", a: ["（A）幼兒模仿父母滑手機", "（B）兒與同學發生衝突", "（C）幼兒學習遵守班級規範", "（D）父母工作壓力增加，導致陪伴幼兒時間減少"], c: 3 },
+            { q: "14. 社會學習理論強調幼兒學習的重要機制為何？", a: ["（A）生理成熟", "（B）遺傳影響", "（C）觀察、模仿與行為後果", "（D）認知發展階段"], c: 2 },
+            { q: "15. 根據自我調節理論，當幼兒無法控制自己繼續觀看螢幕的衝動時，最可能代表什麼？", a: ["（A）社會能力不足", "（B）情緒表達良好", "（C）自我調節能力尚未成熟或失效", "（D）語言能力落後"], c: 2 },
+            { q: "16. 若幼兒因長期接觸高刺激影音媒體並習慣立即獲得回饋，最可能出現何種學習困難？", a: ["（A）閱讀速度太快", "（B）記憶力過強", "（C）難以維持長時間專注與深度思考", "（D）過度遵守規則"], c: 2 },
+            { q: "17. 教育部推動學前閱讀計畫的主要目的為何？", a: ["（A）培養幼兒使用平板閱讀電子書", "（B）提高幼兒玩線上遊戲能力", "（C）增加閱讀與人際互動機會，促進發展", "（D）完全取代幼兒園課程"], c: 2 },
+            { q: "18. 針對幼兒使用螢幕產品，成人可使用的策略「不包含」何者？", a: ["（A）在幼兒使用螢幕產品學習時不打擾，幼兒身為數位原住民，不需質疑使用能力", "（B）與幼兒討論使用螢幕產品時間，利用沙漏等策略讓時間可視化", "（C）增加親子時光，帶孩子到戶外一起運動", "（D）以身作則，吃飯時將手機遠離，一起好好吃飯"], c: 0 }
         ];
 
         function App() {
@@ -70,7 +84,7 @@
             const [cooldown, setCooldown] = useState(0);
             const [feedback, setFeedback] = useState(null);
 
-            // 資料同步
+            // 資料庫同步
             useEffect(() => {
                 const code = role === 'host' ? roomCode : inputCode;
                 if (!code || code.length !== 6) return;
@@ -86,7 +100,7 @@
                 return () => unsubscribe();
             }, [role, roomCode, inputCode]);
 
-            // 老師端計時
+            // 老師端秒數倒數
             useEffect(() => {
                 let timer;
                 if (role === 'host' && isStarted && timeLeft > 0) {
@@ -208,10 +222,10 @@
                             <div className="fixed inset-0 bg-black/95 flex flex-col items-center justify-center z-[60]">
                                 <h2 className="text-7xl font-black text-yellow-400 mb-8 italic text-center">🏆 最終勝利 🏆<br/>{stats[0].name}</h2>
                                 <div className="flex gap-10 mt-10">
-                                    <div className="text-center"><p className="text-slate-400">第二名</p><p className="text-3xl font-bold">{stats[1].name}</p></div>
-                                    <div className="text-center"><p className="text-slate-400">第三名</p><p className="text-3xl font-bold">{stats[2].name}</p></div>
+                                    <div className="text-center"><p className="text-slate-400 text-xl">第二名</p><p className="text-3xl font-bold text-white">{stats[1]?.name || '無'}</p></div>
+                                    <div className="text-center"><p className="text-slate-400 text-xl">第三名</p><p className="text-3xl font-bold text-white">{stats[2]?.name || '無'}</p></div>
                                 </div>
-                                <button onClick={() => window.location.reload()} className="mt-16 px-10 py-4 bg-white text-black font-bold rounded-xl">重啟戰局</button>
+                                <button onClick={() => window.location.reload()} className="mt-16 px-10 py-4 bg-white text-black font-bold rounded-xl text-xl">重啟戰局</button>
                             </div>
                         )}
                     </div>
@@ -257,12 +271,12 @@
 
                     {showQuiz && (
                         <div className="fixed inset-0 bg-slate-950/95 flex items-center justify-center p-6 z-50">
-                            <div className="bg-white text-slate-900 w-full max-w-sm rounded-[2.5rem] p-8 space-y-6">
+                            <div className="bg-white text-slate-900 w-full max-w-lg rounded-[2.5rem] p-8 space-y-6 max-h-[90vh] overflow-y-auto">
                                 {!feedback ? (
                                     <>
-                                        <h3 className="text-xl font-bold">{showQuiz.q}</h3>
+                                        <h3 className="text-xl font-bold leading-relaxed">{showQuiz.q}</h3>
                                         <div className="space-y-3">
-                                            {showQuiz.a.map((ans, i) => (<button key={i} onClick={() => handleAnswer(i)} className="w-full p-4 text-left border-2 rounded-xl font-bold active:bg-slate-100">{ans}</button>))}
+                                            {showQuiz.a.map((ans, i) => (<button key={i} onClick={() => handleAnswer(i)} className="w-full p-4 text-left border-2 rounded-xl font-bold text-lg active:bg-slate-100 border-slate-200 transition-colors">{ans}</button>))}
                                         </div>
                                     </>
                                 ) : (
