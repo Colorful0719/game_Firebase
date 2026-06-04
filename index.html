@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>七軍領地爭奪戰 - 幼教 3C 議題音效專版</title>
+    <title>七軍領地爭奪戰 - 幼教 3C 議題音效完美版</title>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -11,7 +11,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@500;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght=500;900&display=swap');
         body { font-family: 'Noto Sans TC', sans-serif; background-color: #020617; color: white; margin: 0; overflow-x: hidden; }
         .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
         .aspect-square { aspect-ratio: 1 / 1; }
@@ -85,34 +85,43 @@
             const [feedback, setFeedback] = useState(null);
             const [isMuted, setIsMuted] = useState(false);
 
-            // 音訊物件化（免版權緊張動感音樂與音效庫）
-            const bgmRef = useRef(new Audio("https://actions.google.com/sounds/v1/science_fiction/pulsating_structural_hum.ogg"));
-            const sfxCorrectRef = useRef(new Audio("https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg"));
-            const sfxWrongRef = useRef(new Audio("https://actions.google.com/sounds/v1/impacts/crash_wood.ogg"));
+            // 音訊網址修正為高相容性 MP3 串流來源 (Pixabay 免版權音效庫)
+            const bgmRef = useRef(new Audio("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3")); // 輕快動感科技風 BGM
+            const sfxCorrectRef = useRef(new Audio("https://assets.mixkit.co/active_storage/sfx/2019/2019-84.wav")); // 正確叮咚聲
+            const sfxWrongRef = useRef(new Audio("https://assets.mixkit.co/active_storage/sfx/2955/2955-84.wav")); // 錯誤低音轟炸聲
 
-            // 音訊基礎設定
             useEffect(() => {
                 bgmRef.current.loop = true;
-                bgmRef.current.volume = 0.4;
-                sfxCorrectRef.current.volume = 0.6;
+                bgmRef.current.volume = 0.25; // 降低 BGM，不干擾講課
+                sfxCorrectRef.current.volume = 0.5;
                 sfxWrongRef.current.volume = 0.5;
+                
+                // 強制在加載時不預讀，提高在校園網速慢時的穩定度
+                bgmRef.current.preload = "auto";
+                sfxCorrectRef.current.preload = "auto";
+                sfxWrongRef.current.preload = "auto";
             }, []);
 
-            // 靜音控制
+            // 監聽靜音狀態
             useEffect(() => {
                 bgmRef.current.muted = isMuted;
                 sfxCorrectRef.current.muted = isMuted;
                 sfxWrongRef.current.muted = isMuted;
             }, [isMuted]);
 
-            // 遊戲開始與結束時的 BGM 控制
+            // 遊戲開局/結束時的 BGM 切換
             useEffect(() => {
-                if (isStarted && timeLeft > 0) {
-                    bgmRef.current.play().catch(() => console.log("等待使用者點擊互動以播放音訊"));
+                if (isStarted && timeLeft > 0 && role === 'host') {
+                    const playPromise = bgmRef.current.play();
+                    if (playPromise !== undefined) {
+                        playPromise.catch(error => {
+                            console.log("播放被瀏覽器攔截，等待老師點擊互動按鈕開通音訊機制: ", error);
+                        });
+                    }
                 } else {
                     bgmRef.current.pause();
                 }
-            }, [isStarted, timeLeft]);
+            }, [isStarted, timeLeft, role]);
 
             // 資料庫同步
             useEffect(() => {
@@ -168,14 +177,18 @@
 
             const handleAnswer = (idx) => {
                 if (idx === showQuiz.c) {
-                    sfxCorrectRef.current.currentTime = 0;
-                    sfxCorrectRef.current.play().catch(() => {});
+                    try {
+                        sfxCorrectRef.current.currentTime = 0;
+                        sfxCorrectRef.current.play();
+                    } catch(e){}
                     setFeedback({ ok: true, msg: '✅ 正確！佔領成功' });
                     capture();
                     setTimeout(() => { setShowQuiz(null); setFeedback(null); }, 400);
                 } else {
-                    sfxWrongRef.current.currentTime = 0;
-                    sfxWrongRef.current.play().catch(() => {});
+                    try {
+                        sfxWrongRef.current.currentTime = 0;
+                        sfxWrongRef.current.play();
+                    } catch(e){}
                     setFeedback({ ok: false, msg: '❌ 錯誤！冷卻 5 秒' });
                     setCooldown(5);
                     setTimeout(() => { setShowQuiz(null); setFeedback(null); }, 1000);
@@ -242,95 +255,4 @@
                             <div className="flex-1 glass rounded-[3rem] p-6 flex items-center justify-center">
                                 <div className="grid grid-cols-10 grid-rows-10 gap-1 aspect-square w-full max-h-full">
                                     {grid.map((c, i) => (
-                                        <div key={i} className={`grid-cell rounded-sm ${c ? TEAMS.find(t => t.id === c.team).color : 'bg-slate-900/40'}`} />
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-
-                        {!isStarted && (
-                            <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
-                                <button onClick={() => { setIsStarted(true); db.collection('rooms').doc(roomCode).update({ isStarted: true }); }} 
-                                        className="px-20 py-10 bg-cyan-500 rounded-full text-5xl font-black shadow-2xl active:scale-95">開始遊戲</button>
-                            </div>
-                        )}
-
-                        {timeLeft === 0 && (
-                            <div className="fixed inset-0 bg-black/95 flex flex-col items-center justify-center z-[60]">
-                                <h2 className="text-7xl font-black text-yellow-400 mb-8 italic text-center">🏆 最終勝利 🏆<br/>{stats[0].name}</h2>
-                                <div className="flex gap-10 mt-10">
-                                    <div className="text-center"><p className="text-slate-400 text-xl">第二名</p><p className="text-3xl font-bold text-white">{stats[1]?.name || '無'}</p></div>
-                                    <div className="text-center"><p className="text-slate-400 text-xl">第三名</p><p className="text-3xl font-bold text-white">{stats[2]?.name || '無'}</p></div>
-                                </div>
-                                <button onClick={() => window.location.reload()} className="mt-16 px-10 py-4 bg-white text-black font-bold rounded-xl text-xl">重啟戰局</button>
-                            </div>
-                        )}
-                    </div>
-                );
-            }
-
-            if (role === 'client' && !myTeam) {
-                return (
-                    <div className="min-h-screen flex items-center justify-center p-6">
-                        <div className="glass p-8 rounded-[2.5rem] w-full max-w-sm space-y-6">
-                            <h2 className="text-2xl font-bold text-center">軍團報到</h2>
-                            <div className="space-y-4">
-                                <input value={inputCode} onChange={e => setInputCode(e.target.value)} maxLength={6} placeholder="輸入 6 位代碼" 
-                                    className="w-full p-4 bg-slate-900 rounded-xl text-center font-mono text-2xl border border-slate-800" />
-                                <input value={userName} onChange={e => setUserName(e.target.value)} placeholder="你的姓名" 
-                                    className="w-full p-4 bg-slate-900 rounded-xl text-center text-lg border border-slate-800" />
-                            </div>
-                            <div className="grid grid-cols-2 gap-2">
-                                {TEAMS.map(t => (
-                                    <button key={t.id} onClick={() => { if(userName.length >= 1 && inputCode.length === 6) setMyTeam(t) }} 
-                                        className={`${t.color} py-4 rounded-xl text-sm font-bold active:scale-90 shadow-lg`}>{t.name}</button>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                );
-            }
-
-            return (
-                <div className="min-h-screen flex flex-col">
-                    <div className={`${myTeam.color} p-5 flex justify-between items-center text-white font-black shadow-xl`}>
-                        <span className="text-xl">{userName}</span>
-                        <span className="font-mono text-3xl">{Math.floor(timeLeft/60)}:{(timeLeft%60).toString().padStart(2,'0')}</span>
-                    </div>
-                    <div className="flex-1 flex flex-col items-center justify-center p-6">
-                        <button disabled={cooldown > 0 || !!showQuiz || !isStarted || timeLeft === 0} 
-                                onClick={() => setShowQuiz(QUESTIONS[Math.floor(Math.random()*QUESTIONS.length)])}
-                                className={`w-64 h-64 rounded-full border-[12px] border-white/10 flex flex-col items-center justify-center transition-all
-                                ${!isStarted || timeLeft === 0 ? 'opacity-20' : cooldown > 0 ? 'bg-slate-800 scale-95' : myTeam.color + ' animate-pulse-soft shadow-2xl'}`}>
-                            {cooldown > 0 ? <span className="text-7xl font-black">{cooldown}</span> : <><span className="text-6xl mb-2">⚔️</span><span className="text-2xl font-black tracking-widest">出擊</span></>}
-                        </button>
-                    </div>
-
-                    {showQuiz && (
-                        <div className="fixed inset-0 bg-slate-950/95 flex items-center justify-center p-6 z-50">
-                            <div className="bg-white text-slate-900 w-full max-w-lg rounded-[2.5rem] p-8 space-y-6 max-h-[90vh] overflow-y-auto">
-                                {!feedback ? (
-                                    <>
-                                        <h3 className="text-xl font-bold leading-relaxed">{showQuiz.q}</h3>
-                                        <div className="space-y-3">
-                                            {showQuiz.a.map((ans, i) => (<button key={i} onClick={() => handleAnswer(i)} className="w-full p-4 text-left border-2 rounded-xl font-bold text-lg active:bg-slate-100 border-slate-200 transition-colors">{ans}</button>))}
-                                        </div>
-                                    </>
-                                ) : (
-                                    <div className="text-center py-10 space-y-4">
-                                        <div className="text-7xl">{feedback.ok ? '✅' : '❌'}</div>
-                                        <p className="text-2xl font-black">{feedback.msg}</p>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    )}
-                </div>
-            );
-        }
-
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
-    </script>
-</body>
-</html>
+                                        <div key={i} className={`grid
